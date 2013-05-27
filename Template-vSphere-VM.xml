@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>2.0</version>
-    <date>2012-11-11T12:50:37Z</date>
+    <date>2013-05-27T14:45:09Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -935,7 +935,7 @@
             <expression>{Template-vSphere-VM:vm.storageusage.last(0)}&gt;90</expression>
             <name>VM {HOSTNAME} Storage Usage Too High</name>
             <url/>
-            <status>0</status>
+            <status>1</status>
             <priority>2</priority>
             <description/>
             <type>0</type>
