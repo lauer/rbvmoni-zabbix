@@ -161,8 +161,8 @@ class VSphere < RbVmomi::VIM
     case type
 
     when "host"
-			@dc.hostFolder.childEntity.each do |vmhost|
-				vmhost.host.grep(RbVmomi::VIM::HostSystem).each do |stat|
+      @dc.hostFolder.childEntity.each do |vmhost|
+        vmhost.host.grep(RbVmomi::VIM::HostSystem).each do |stat|
         newname = stat.name.gsub(/:/,"-")
         stat_fileName = "h_#{newname}"
         new_list << newname unless File.exist?($filePath + stat_fileName)
@@ -181,14 +181,14 @@ class VSphere < RbVmomi::VIM
           "host-Uptime"           => stat.summary.quickStats.uptime
         }
         writefile(stat_fileName, statData)
-      end
+      end      
       if new_list.length > 0
         unless defined?(@zbxapi)
           @zbxapi = Zbx.new
         end
         @zbxapi.create_zbxHost(new_list, ESX_GROUP, ESX_TEMPLATE)
       end
-		end
+    end
 
     when "ds"
       @dc.datastore.grep(RbVmomi::VIM::Datastore).each do |stat|
@@ -201,7 +201,7 @@ class VSphere < RbVmomi::VIM
           "ds-Name" => stat.name,
           "ds-Capacity" => stat.summary.capacity,
           "ds-FreeSpace" => stat.summary.freeSpace,
-					'ds-Uncommited' => stat.summary.uncommitted,
+          'ds-Uncommited' => stat.summary.uncommitted,
           "ds-VM" => vm_list.join(', ')
         }
         writefile(stat_fileName, statData)
@@ -272,7 +272,7 @@ def writefile(fileName, data)
 end
 
 def stats_file_age_check(time)
-	# If a host does not update more than one day it is removed from Zabbix
+  # If a host does not update more than one day it is removed from Zabbix
   Dir::glob($filePath + "*").each do |f|
     if Time.now - File.stat(f).mtime >= time
       /\A[vhd]_(.*)\z/ =~ File.basename(f)
