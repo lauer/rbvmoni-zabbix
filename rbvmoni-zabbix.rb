@@ -161,7 +161,8 @@ class VSphere < RbVmomi::VIM
     case type
 
     when "host"
-      @dc.hostFolder.childEntity[0].host.grep(RbVmomi::VIM::HostSystem).each do |stat|
+			@dc.hostFolder.childEntity.each do |vmhost|
+				vmhost.host.grep(RbVmomi::VIM::HostSystem).each do |stat|
         newname = stat.name.gsub(/:/,"-")
         stat_fileName = "h_#{newname}"
         new_list << newname unless File.exist?($filePath + stat_fileName)
@@ -187,6 +188,7 @@ class VSphere < RbVmomi::VIM
         end
         @zbxapi.create_zbxHost(new_list, ESX_GROUP, ESX_TEMPLATE)
       end
+		end
 
     when "ds"
       @dc.datastore.grep(RbVmomi::VIM::Datastore).each do |stat|
@@ -269,7 +271,7 @@ def writefile(fileName, data)
 end
 
 def stats_file_age_check(time)
-  # 1日以上更新がないホストはZabbixから削除
+	# If a host does not update more than one day it is removed from Zabbix
   Dir::glob($filePath + "*").each do |f|
     if Time.now - File.stat(f).mtime >= time
       /\A[vhd]_(.*)\z/ =~ File.basename(f)
