@@ -201,6 +201,7 @@ class VSphere < RbVmomi::VIM
           "ds-Name" => stat.name,
           "ds-Capacity" => stat.summary.capacity,
           "ds-FreeSpace" => stat.summary.freeSpace,
+					'ds-Uncommited' => stat.summary.uncommitted,
           "ds-VM" => vm_list.join(', ')
         }
         writefile(stat_fileName, statData)
