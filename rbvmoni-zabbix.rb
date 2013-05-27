@@ -211,30 +211,32 @@ class VSphere < RbVmomi::VIM
       end
 
     when "vm"
-      @dc.vmFolder.childEntity.grep(RbVmomi::VIM::VirtualMachine).each do |stat|
-        newname = stat.name.gsub(/:/,"-")
-        stat_fileName = "v_#{newname}"
-        new_list << newname unless File.exist?($filePath + stat_fileName)
-        statData = {
-          "vm-Name" => stat.name,
-          "vm-ESXi" => stat.runtime.host.name,
-          "vm-powerState" => stat.summary.runtime.powerState,
-          "vm-guestFullName" => stat.summary.guest.guestFullName,
-          "vm-HostName" => stat.summary.guest.hostName,
-          "vm-IPAddress" => stat.summary.guest.ipAddress,
-          "vm-VMwareTools" => stat.summary.guest.toolsStatus,
-          "vm-maxCpuUsage" => stat.summary.runtime.maxCpuUsage,
-          "vm-numCpu" => stat.summary.config.numCpu,
-          "vm-overallCpuUsage" => stat.summary.quickStats.overallCpuUsage,
-          "vm-memorySizeMB" => stat.summary.config.memorySizeMB,
-          "vm-hostMemoryUsage" => stat.summary.quickStats.hostMemoryUsage,
-          "vm-guestMemoryUsage" => stat.summary.quickStats.guestMemoryUsage,
-          "vm-UncommittedStorage" => stat.summary.storage.uncommitted,
-          "vm-UsedStorage" => stat.summary.storage.committed,
-          "vm-UnsharedStorage" => stat.summary.storage.unshared,
-          "vm-Uptime" => stat.summary.quickStats.uptimeSeconds
-        }
-        writefile(stat_fileName, statData)
+      @dc.vmFolder.inventory_flat.each do |folder|
+        folder.first.childEntity.grep(RbVmomi::VIM::VirtualMachine).each do |stat|
+          newname = stat.name.gsub(/:/,"-")
+          stat_fileName = "v_#{newname}"
+          new_list << newname unless File.exist?($filePath + stat_fileName)
+          statData = {
+            "vm-Name" => stat.name,
+            "vm-ESXi" => stat.runtime.host.name,
+            "vm-powerState" => stat.summary.runtime.powerState,
+            "vm-guestFullName" => stat.summary.guest.guestFullName,
+            "vm-HostName" => stat.summary.guest.hostName,
+            "vm-IPAddress" => stat.summary.guest.ipAddress,
+            "vm-VMwareTools" => stat.summary.guest.toolsStatus,
+            "vm-maxCpuUsage" => stat.summary.runtime.maxCpuUsage,
+            "vm-numCpu" => stat.summary.config.numCpu,
+            "vm-overallCpuUsage" => stat.summary.quickStats.overallCpuUsage,
+            "vm-memorySizeMB" => stat.summary.config.memorySizeMB,
+            "vm-hostMemoryUsage" => stat.summary.quickStats.hostMemoryUsage,
+            "vm-guestMemoryUsage" => stat.summary.quickStats.guestMemoryUsage,
+            "vm-UncommittedStorage" => stat.summary.storage.uncommitted,
+            "vm-UsedStorage" => stat.summary.storage.committed,
+            "vm-UnsharedStorage" => stat.summary.storage.unshared,
+            "vm-Uptime" => stat.summary.quickStats.uptimeSeconds
+          }
+          writefile(stat_fileName, statData)
+        end
       end
       if new_list.length > 0
         unless defined?(@zbxapi)
