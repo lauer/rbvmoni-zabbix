@@ -181,14 +181,14 @@ class VSphere < RbVmomi::VIM
           "host-Uptime"           => stat.summary.quickStats.uptime
         }
         writefile(stat_fileName, statData)
-      end      
+      end
+    end
       if new_list.length > 0
         unless defined?(@zbxapi)
           @zbxapi = Zbx.new
         end
         @zbxapi.create_zbxHost(new_list, ESX_GROUP, ESX_TEMPLATE)
       end
-    end
 
     when "ds"
       @dc.datastore.grep(RbVmomi::VIM::Datastore).each do |stat|
